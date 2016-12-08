@@ -1,0 +1,36 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>challenge-rf</groupId>
+    <artifactId>challenge-rf</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>challenge-rf</name>
+    <description>Root pom</description>
+
+    <prerequisites>
+        <maven>3.3.9</maven>
+    </prerequisites>
+
+
+    <properties>
+        <version.scala.major>2.11</version.scala.major>
+        <version.scala>${version.scala.major}.8</version.scala>
+    </properties>
+
+    <modules>
+        <module>src/api</module>
+        <module>src/core</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-library</artifactId>
+                <version>${version.scala}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
