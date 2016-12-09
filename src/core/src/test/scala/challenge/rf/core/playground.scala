@@ -20,11 +20,6 @@ object playground extends App {
 
   val serviceLoader = new ServiceLoaderImpl()
 
-// serviceLoader.loadAndValidate(dbGood) match {
-//    case Some(_) => assert(true)
-//    case None => assert(false)
-//  }
-
   val services = serviceLoader.load(dbGood)
 
   val wtfman = List.empty[ServiceMetadata]

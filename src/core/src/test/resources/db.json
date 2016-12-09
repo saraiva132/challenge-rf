@@ -8,6 +8,14 @@
   },
   {
     "name" : "service2",
-    "cls"  : "challenge.rf.core.ServiceExample1"
+    "cls"  : "challenge.rf.core.ServiceExample"
+  },
+  {
+    "name" : "service3",
+    "cls"  : "challenge.rf.core.ServiceExample"
+  },
+  {
+    "name" : "service4",
+    "cls"  : "challenge.rf.core.ServiceExample"
   }
 ]

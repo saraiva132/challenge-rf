@@ -9,7 +9,7 @@ import scala.util.Try
 
 class ServiceLoaderImpl extends ServiceLoader {
 
-  implicit val formats = DefaultFormats
+  implicit private val formats = DefaultFormats
 
   /**
    * Load config file into ORM. Validations are assumed to be done by the caller.
@@ -35,7 +35,7 @@ class ServiceLoaderImpl extends ServiceLoader {
 
 
   /**
-   * Validation method. Sorry the graph loop detection is not tail recursive. =(
+   * Validation method. Sorry, the graph loop detection is not tail recursive. =( And the algorithm is kinda dumb..
    *
    * @param metadata - metadata to be validated
    * @return - OK if valid.
@@ -54,13 +54,10 @@ class ServiceLoaderImpl extends ServiceLoader {
 
       def nameToService(name : String) : Option[ServiceMetadata] = metadata.find(_.name equals name)
 
-      val isRepeated = (name : String, s : ServiceMetadata) => name equals s.name
-
       def loop(deps: Vector[ServiceMetadata]): Boolean = {
-        if(deps.size == 0) false
-        else if(deps.exists(_.name equals sv.name)) true
-        else if(deps.exists(_.dependencies.exists(isRepeated(_,sv)))) true
-        else deps.exists(s => loop(s.dependencies.flatMap(nameToService)))
+        if(deps.size == 0) false /* All good*/
+        else if(deps.exists(_.dependencies.exists( _ equals sv.name))) true /* Cyclic Dependency*/
+        else deps.exists(s => loop(s.dependencies.flatMap(nameToService))) /* Recursively call all dependencies*/
       }
 
       loop(sv.dependencies.flatMap(nameToService))
