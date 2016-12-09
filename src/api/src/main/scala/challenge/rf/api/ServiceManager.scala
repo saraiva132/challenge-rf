@@ -17,11 +17,11 @@ trait Service {
   def stop() : Result
 }
 
-case class ServiceMetadata(name : String, dependencies : Vector[String], state : State = INIT)
+case class ServiceMetadata(name : String, cls : String, dependencies : Vector[String] = Vector.empty, state : State = NEW)
 
 trait ServiceLoader {
   def load(file : String) : Vector[ServiceMetadata]
   def validate(metadata :Vector[ServiceMetadata]) : Result
-  def loadAndValidate(file : String) : Vector[ServiceMetadata]
+  def loadAndValidate(file : String) : Option[Vector[ServiceMetadata]]
 }
 

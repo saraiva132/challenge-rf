@@ -2,7 +2,7 @@ package challenge.rf.api
 
 /* STATE MACHINE*/
 sealed trait State { def name : String}
-case object INIT     extends State { val name = "INIT" }
+case object NEW      extends State { val name = "NEW" }
 case object STARTING extends State { val name = "STARTING" }
 case object RUNNING  extends State { val name = "RUNNING" }
 case object STOPPING extends State { val name = "STOPPING" }

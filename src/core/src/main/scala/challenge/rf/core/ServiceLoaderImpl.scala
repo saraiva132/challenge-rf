@@ -2,42 +2,71 @@ package challenge.rf.core
 
 import challenge.rf.api.{ServiceMetadata, ServiceLoader}
 import challenge.rf.api.{Result, OK, NOK}
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import scala.annotation.tailrec
+import org.json4s._
+import org.json4s.native.JsonMethods._
+
+import scala.util.Try
 
 class ServiceLoaderImpl extends ServiceLoader {
 
-  val mapper = new ObjectMapper()
-  mapper.registerModule(DefaultScalaModule)
+  implicit val formats = DefaultFormats
 
-  def load(file: String): Vector[ServiceMetadata] =
-    mapper.readValue(file, classOf[Vector[ServiceMetadata]])
+  /**
+   * Load config file into ORM. Validations are assumed to be done by the caller.
+   *
+   * @param config - Configuration file in String format. (Assumed UTF-8)
+   * @return - The list of ServiceMetadata
+   */
+  def load(config: String): Vector[ServiceMetadata] = parse(config).extract[Vector[ServiceMetadata]]
 
-  def loadAndValidate(file: String): Option[Vector[ServiceMetadata]] = {
-    val metadata = mapper.readValue(file, classOf[Vector[ServiceMetadata]])
+  /**
+   * Load and validate config file into ORM.
+   *
+   * @param config - Configuration file in String format. (Assumed UTF-8)
+   * @return - The list of ServiceMetadata
+   */
+  def loadAndValidate(config: String): Option[Vector[ServiceMetadata]] = Try{
+    val metadata = parse(config).extract[Vector[ServiceMetadata]]
     validate(metadata) match {
       case OK => Some(metadata)
       case NOK => None
     }
-  }
+  }.getOrElse(None)
 
+
+  /**
+   * Validation method. Sorry the graph loop detection is not tail recursive. =(
+   *
+   * @param metadata - metadata to be validated
+   * @return - OK if valid.
+   *           NOK if not valid.
+   */
   def validate(metadata: Vector[ServiceMetadata]): Result = {
 
-    val detectDuplicates = metadata.groupBy(_.name).exists(_._2.size > 1)
+    /* Duplicated names*/
+    val detectDuplicates = metadata.size == metadata.map(_.name).distinct.size
 
-    def detectGraphLoop(sv: ServiceMetadata): Boolean = {
-      @tailrec
+    /* Invalid dependencies*/
+    val detectInvalidDependencies = metadata.flatMap(_.dependencies).distinct.forall( it => metadata.exists( _.name equals it))
+
+    /* Cyclic dependencies */
+    def detectGraphLoop(sv: ServiceMetadata) = {
+
+      def nameToService(name : String) : Option[ServiceMetadata] = metadata.find(_.name equals name)
+
+      val isRepeated = (name : String, s : ServiceMetadata) => name equals s.name
+
       def loop(deps: Vector[ServiceMetadata]): Boolean = {
         if(deps.size == 0) false
-        else if(deps.exists(_.name equals sv)) true
-        else if(deps.exists(_.dependencies.exists(_ equals sv))) true
-        else loop(deps.flatMap(it => metadata.find(_.name equals it)))
+        else if(deps.exists(_.name equals sv.name)) true
+        else if(deps.exists(_.dependencies.exists(isRepeated(_,sv)))) true
+        else deps.exists(s => loop(s.dependencies.flatMap(nameToService)))
       }
-      loop(sv.dependencies.flatMap(it => metadata.find(_.name equals it)))
+
+      loop(sv.dependencies.flatMap(nameToService))
     }
 
-    if(!detectDuplicates && !metadata.forall(detectGraphLoop)) OK
-    else NOK
+    if(!detectDuplicates || !detectInvalidDependencies || metadata.exists(detectGraphLoop)) NOK
+    else OK
   }
 }

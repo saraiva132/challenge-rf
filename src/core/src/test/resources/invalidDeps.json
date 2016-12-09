@@ -7,7 +7,10 @@
     ]
   },
   {
-    "name" : "service2",
-    "cls"  : "challenge.rf.core.ServiceExample1"
+    "name" : "service1",
+    "cls"  : "challenge.rf.core.ServiceExample1",
+    "dependencies" : [
+      "service3"
+    ]
   }
 ]

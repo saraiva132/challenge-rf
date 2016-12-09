@@ -1,0 +1,20 @@
+[
+  {
+    "name" : "service1",
+    "cls"  : "challenge.rf.core.ServiceExample",
+    "dependencies" : [
+      "service2"
+    ]
+  },
+  {
+    "name" : "service2",
+    "cls"  : "challenge.rf.core.ServiceExample1",
+    "dependencies" : [
+      "service3","service1"
+    ]
+  },
+  {
+    "name" : "service3",
+    "cls"  : "challenge.rf.core.ServiceExample2"
+  }
+]
