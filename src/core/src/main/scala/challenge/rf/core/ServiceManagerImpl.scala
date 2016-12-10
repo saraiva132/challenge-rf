@@ -21,8 +21,11 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
         svState.synchronized {
           svState.state match {
             case NEW | DEAD | STARTING | STOPPING =>
+              if (withDeps) {
+
+              }
               val svConf = fromConfig(name).get /* Safe to call get here*/
-              if (svConf.dependencies.exists(services.get(_).get._1.state != RUNNING)) return NOK /* Safe to call get here*/
+              //if (svConf.dependencies.exists(services.get(_).get._1.state != RUNNING)) return NOK /* Safe to call get here*/
               Try {
                 val service = Class.forName(svConf.cls).asSubclass(classOf[Service]).newInstance()
                 svState.state = STARTING
@@ -47,28 +50,29 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
 
   override def stop(name: String, withDeps: Boolean = false): Result = {
     services.get(name) match {
-      case Some((state, service, thread)) => state.state match {
-        case RUNNING | STARTING =>
-          Future {
-            state.synchronized {
-              if (services.get(name).get._1.state == RUNNING) {
-                state.state = STOPPING
-                services.update(name, (state, service, thread))
-                service.stop()
-                try {
-                  thread.join(3000)
-                } finally{
-                  if(thread.isAlive)
-                    thread.stop() // Let the service have a change to shutdown
-                }
-                state.state = DEAD
-                services.update(name, (state, null, null))
+      case Some((svState, service, thread)) => Future {
+        svState.synchronized {
+          svState.state match {
+            case RUNNING  =>
+              svState.state = STOPPING
+              services.update(name, (svState, service, thread))
+              service.stop()
+              try {
+                thread.join(3000)
+              } finally {
+                if (thread.isAlive)
+                  thread.stop() // Let the service have a change to shutdown
               }
-            }
+              svState.state = DEAD
+              services.update(name, (svState, null, null))
+              OK
+            case STARTING =>
+            case NEW | DEAD => NOK
           }
-          OK
-        case NEW | DEAD | STOPPING => NOK
+        }
       }
+        OK
+      case None => NOK
     }
   }
 
@@ -76,14 +80,13 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
     fromConfig(name) match {
       case Some(serviceMetadata) =>
         def loopDeps(metadata: ServiceMetadata): Unit = {
-          val deps = config.flatMap(_.dependencies. // Find all dependencies
-            filter(_ equals metadata.name)). // Filter all dependant services
-            filter(services.get(_).get._1 == RUNNING) // Filter all which are running
-          deps.flatMap(fromConfig(_)).foreach(loopDeps) // Recursive call
-          stop(metadata.name) //finally stop
+          config.filter(_.dependencies.
+            filter(services.get(_).get._1.state == RUNNING).  // Filter all which are running
+            exists(_ equals metadata.name)). //filter by only dependant services
+            foreach(loopDeps) // Recursive call
+          stop(metadata.name, true) //finally stop
         }
         loopDeps(serviceMetadata)
-        stop(serviceMetadata.name)
         OK
       case None => NOK
     }
@@ -95,10 +98,9 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
         def loopDeps(metadata: ServiceMetadata): Unit = {
           val deps = metadata.dependencies.filter(services.get(_).get._1.state != RUNNING)
           deps.flatMap(fromConfig(_)).foreach(loopDeps)
-          start(metadata.name)
+          start(metadata.name, true)
         }
         loopDeps(serviceMetadata)
-        start(serviceMetadata.name)
         OK
       case None => NOK
     }

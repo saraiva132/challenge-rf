@@ -1,21 +1,21 @@
 [
   {
     "name" : "service1",
-    "cls"  : "challenge.rf.core.ServiceExample",
+    "cls"  : "challenge.rf.core.ServiceExample1",
     "dependencies" : [
-      "service2"
+      "service2","service3"
     ]
   },
   {
     "name" : "service2",
-    "cls"  : "challenge.rf.core.ServiceExample"
+    "cls"  : "challenge.rf.core.ServiceExample2"
   },
   {
     "name" : "service3",
-    "cls"  : "challenge.rf.core.ServiceExample"
+    "cls"  : "challenge.rf.core.ServiceExample3"
   },
   {
     "name" : "service4",
-    "cls"  : "challenge.rf.core.ServiceExample"
+    "cls"  : "challenge.rf.core.ServiceExample4"
   }
 ]

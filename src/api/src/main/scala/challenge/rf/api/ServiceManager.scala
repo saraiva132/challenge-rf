@@ -47,4 +47,3 @@ trait ServiceLoader {
   def validate(metadata :Vector[ServiceMetadata]) : Result
   def loadAndValidate(file : String) : Option[Vector[ServiceMetadata]]
 }
-

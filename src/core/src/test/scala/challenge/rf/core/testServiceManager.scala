@@ -5,7 +5,6 @@ import java.io.File
 import challenge.rf.api.{NOK, OK, Result, Service}
 import org.junit.Test
 
-
 object testServiceManager {
   val pwd = new File(".").getCanonicalPath
   val sep = java.io.File.separator
@@ -21,7 +20,7 @@ class testServiceManager {
 
   import testServiceManager._
 
-  @Test
+  //@Test
   def startServiceNoDependencies(): Unit = {
     sv.start("service2")
     Thread.sleep(3000)
@@ -29,7 +28,7 @@ class testServiceManager {
     Thread.sleep(5000)
   }
 
-  @Test
+  //@Test
   def startServiceDependencies(): Unit = {
     sv.start("service1") match {
       case OK => assert(false)
@@ -37,7 +36,7 @@ class testServiceManager {
     }
   }
 
-  @Test
+  //@Test
   def startMultipleServiceNoDependencies(): Unit = {
     sv.start("service2")
     sv.start("service3")
@@ -49,22 +48,15 @@ class testServiceManager {
     Thread.sleep(5000)
   }
 
+  @Test
+  def startServiceWithDependencies(): Unit = {
+    sv.startWithDependencies("service1")
+    Thread.sleep(5000)
+    sv.stopWithDependencies("service2")
+    Thread.sleep(5000)
+
+  }
+
 }
 
-class ServiceExample extends Service {
-  override def start(): Result = {
-    println("Starting ServiceExample")
-    Thread.sleep(2000)
-    OK
-  }
 
-  override def stop(): Result = {
-    println("Stopping ServiceExample")
-    Thread.sleep(2000)
-    OK
-  }
-
-  override def run(): Unit = {
-    println("Running ServiceExample")
-  }
-}
