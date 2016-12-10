@@ -2,7 +2,7 @@ package challenge.rf.core
 
 import java.io.File
 
-import challenge.rf.api.{NOK, OK, Result, Service}
+import challenge.rf.api.{NOK, OK}
 import org.junit.Test
 
 object testServiceManager {
@@ -29,6 +29,14 @@ class testServiceManager {
   }
 
   //@Test
+  def startStopServiceNoDependencies(): Unit = {
+    sv.start("service2")
+    Thread.sleep(100)
+    sv.stop("service2")
+    Thread.sleep(6000)
+  }
+
+  //@Test
   def startServiceDependencies(): Unit = {
     sv.start("service1") match {
       case OK => assert(false)
@@ -51,10 +59,11 @@ class testServiceManager {
   @Test
   def startServiceWithDependencies(): Unit = {
     sv.startWithDependencies("service1")
-    Thread.sleep(5000)
+    Thread.sleep(10000)
     sv.stopWithDependencies("service2")
     Thread.sleep(5000)
-
+    sv.stopAll()
+    Thread.sleep(5000)
   }
 
 }

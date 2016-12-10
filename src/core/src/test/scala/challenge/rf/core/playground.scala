@@ -1,8 +1,9 @@
 package challenge.rf.core
 
 import java.io.File
+import scala.concurrent.ExecutionContext.Implicits.global
 
-import challenge.rf.api.ServiceMetadata
+import scala.concurrent.Future
 
 
 object playground extends App {
@@ -20,14 +21,24 @@ object playground extends App {
 
   val serviceLoader = new ServiceLoaderImpl()
 
-  val services = serviceLoader.load(dbGood)
+  val services = serviceLoader.loadAndValidate(dbGood)
 
-  val wtfman = List.empty[ServiceMetadata]
+  val LOCK: String = ""
+  val opt: Option[String] = Some(LOCK)
 
-  services.map(_.name).foreach(println)
+  def lock(x: Int) {
+    opt match {
+      case Some(str) =>
+        str.synchronized {
+          println(x)
+          Thread.sleep(2000)
+        }
+      case None =>
+    }
+  }
 
-  wtfman.foreach(println)
-
-  wtfman.map(_.name).foreach(println)
-
-}
+    Range(1, 4).foreach(it => Future {
+      lock(it)
+    })
+    Thread.sleep(10000)
+  }

@@ -3,7 +3,7 @@
     "name" : "service1",
     "cls"  : "challenge.rf.core.ServiceExample1",
     "dependencies" : [
-      "service2","service3"
+      "service2","service3","service4"
     ]
   },
   {
@@ -12,7 +12,10 @@
   },
   {
     "name" : "service3",
-    "cls"  : "challenge.rf.core.ServiceExample3"
+    "cls"  : "challenge.rf.core.ServiceExample3",
+    "dependencies" : [
+      "service2"
+    ]
   },
   {
     "name" : "service4",
