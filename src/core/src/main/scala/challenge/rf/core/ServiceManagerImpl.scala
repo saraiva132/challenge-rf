@@ -184,10 +184,10 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
   }
 
   override def stopAll(): Unit = config.
-    foreach(svMetadata => stopWithDependencies(svMetadata.name))
+    foreach(svMetadata => Future { stopWithDependencies( svMetadata.name )})
 
   override def startAll(): Unit = config.
-    foreach(svMetadata => startWithDependencies(svMetadata.name))
+    foreach(svMetadata => Future { startWithDependencies(svMetadata.name) })
 
   def activeServices(): Vector[ServiceMetadata] =
     services.filter { case (k, v) => v._1.state == RUNNING }.

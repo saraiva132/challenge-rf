@@ -48,11 +48,15 @@ trait ServiceManager {
 
   /**
    * Start all services. (Taking in account dependencies order)
+   *
+   * Non-blocking method.
    */
   def startAll()
 
   /**
    * Stop all services. (Taking in account dependant services order)
+   *
+   * Non-blocking method.
    */
   def stopAll()
 }

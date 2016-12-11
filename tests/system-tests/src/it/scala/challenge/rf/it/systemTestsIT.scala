@@ -22,7 +22,7 @@ import systemTests._
 
 class systemTests {
   @Test
-  def startServiceNoDependencies(): Unit = {
+  def systemTest(): Unit = {
     sv.startAll()
     Thread.sleep(2500)
     sv.stopAll()

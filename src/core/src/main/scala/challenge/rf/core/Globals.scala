@@ -14,7 +14,7 @@ object Globals {
    */
   implicit lazy val ec: ExecutionContextExecutor = {
 
-    val nThreads = 8
+    val nThreads = 16
 
     trait format {
       val count: AtomicInteger = new AtomicInteger(0)
