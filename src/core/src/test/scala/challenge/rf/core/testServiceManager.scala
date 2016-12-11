@@ -26,6 +26,7 @@ class testServiceManager {
   @Test
   def startServiceNoDependencies(): Unit = {
     sv.stopAll()
+    Thread.sleep(750)
     sv.start("service2")
     Thread.sleep(300)
     sv.stop("service2")
@@ -36,6 +37,7 @@ class testServiceManager {
   @Test
   def startStopServiceNoDependencies(): Unit = {
     sv.stopAll()
+    Thread.sleep(750)
     Future { sv.start("service2") }
     Thread.sleep(100)
     Future { sv.stop("service2") }
@@ -46,6 +48,7 @@ class testServiceManager {
   @Test
   def startServiceDependencies(): Unit = {
     sv.stopAll()
+    Thread.sleep(750)
     sv.start("service1") match {
       case OK => assert(false)
       case NOK => assert(true)
@@ -55,6 +58,7 @@ class testServiceManager {
   @Test
   def stopServiceDependencies(): Unit = {
     sv.stopAll()
+    Thread.sleep(750)
     sv.startWithDependencies("service1")
     Thread.sleep(1000)
     sv.stop("service2") match {
@@ -66,6 +70,7 @@ class testServiceManager {
   @Test
   def startMultipleServiceNoDependencies(): Unit = {
     sv.stopAll()
+    Thread.sleep(750)
     sv.start("service2")
     sv.start("service3")
     sv.start("service4")
@@ -80,6 +85,7 @@ class testServiceManager {
   @Test
   def startServiceWithDependencies(): Unit = {
     sv.stopAll()
+    Thread.sleep(750)
     sv.startWithDependencies("service1")
     Thread.sleep(1000)
     sv.stopWithDependencies("service2")
@@ -92,6 +98,7 @@ class testServiceManager {
   @Test
   def disabledServiceDependencies(): Unit = {
     sv.stopAll()
+    Thread.sleep(750)
     sv.start("disabled") match {
       case OK => assert(false)
       case NOK => assert(true)
@@ -103,6 +110,7 @@ class testServiceManager {
   @Test
   def stressTestNumber1() :Unit = {
     sv.stopAll()
+    Thread.sleep(750)
     Future { sv.startWithDependencies("service1") }
     Thread.sleep(450)
     sv.stopWithDependencies("service2")
@@ -113,9 +121,9 @@ class testServiceManager {
   @Test
   def startAllStopAll() : Unit = {
     sv.startAll()
-    Thread.sleep(500)
+    Thread.sleep(750)
     sv.stopAll()
-    Thread.sleep(500)
+    Thread.sleep(750)
     assert(sv.activeServices().size == 0)
   }
 }
