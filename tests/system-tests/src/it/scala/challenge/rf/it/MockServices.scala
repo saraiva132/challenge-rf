@@ -11,71 +11,107 @@ class ServiceExample1 extends ServiceExample {
 
   override def start(): Result = {
     Thread.sleep(200)
-    logger.debug("Starting ServiceExample1")
+    println("Starting ServiceExample1")
     OK
   }
 
   override def stop(): Result = {
     Thread.sleep(200)
-    logger.debug("Stopping ServiceExample1")
+    println("Stopping ServiceExample1")
     OK
   }
 
   override def run(): Unit = {
-    logger.debug("Running ServiceExample1")
+    println("Running ServiceExample1")
   }
 }
 
 class ServiceExample2 extends ServiceExample {
   override def start(): Result = {
     Thread.sleep(200)
-    logger.debug("Starting ServiceExample2")
+    println("Starting ServiceExample2")
     OK
   }
 
   override def stop(): Result = {
     Thread.sleep(200)
-    logger.debug("Stopping ServiceExample2")
+    println("Stopping ServiceExample2")
     OK
   }
 
   override def run(): Unit = {
-    logger.debug("Running ServiceExample2")
+    println("Running ServiceExample2")
   }
 }
 
 class ServiceExample3 extends ServiceExample {
   override def start(): Result = {
     Thread.sleep(200)
-    logger.debug("Starting ServiceExample3")
+    println("Starting ServiceExample3")
     OK
   }
 
   override def stop(): Result = {
     Thread.sleep(200)
-    logger.debug("Stopping ServiceExample3")
+    println("Stopping ServiceExample3")
     OK
   }
 
   override def run(): Unit = {
-    logger.debug("Running ServiceExample3")
+    println("Running ServiceExample3")
   }
 }
 
 class ServiceExample4 extends ServiceExample {
   override def start(): Result = {
     Thread.sleep(200)
-    logger.debug("Starting ServiceExample4")
+    println("Starting ServiceExample4")
     OK
   }
 
   override def stop(): Result = {
     Thread.sleep(200)
-    logger.debug("Stopping ServiceExample4")
+    println("Stopping ServiceExample4")
     OK
   }
 
   override def run(): Unit = {
-    logger.debug("Running ServiceExample4")
+    println("Running ServiceExample4")
+  }
+}
+
+class ServiceExample5 extends ServiceExample {
+  override def start(): Result = {
+    Thread.sleep(200)
+    println("Starting ServiceExample5")
+    OK
+  }
+
+  override def stop(): Result = {
+    Thread.sleep(200)
+    println("Stopping ServiceExample5")
+    OK
+  }
+
+  override def run(): Unit = {
+    println("Running ServiceExample5")
+  }
+}
+
+class ServiceExample6 extends ServiceExample {
+  override def start(): Result = {
+    Thread.sleep(200)
+    println("Starting ServiceExample6")
+    OK
+  }
+
+  override def stop(): Result = {
+    Thread.sleep(200)
+    println("Stopping ServiceExample6")
+    OK
+  }
+
+  override def run(): Unit = {
+    println("Running ServiceExample6")
   }
 }

@@ -22,6 +22,20 @@
     "cls"  : "challenge.rf.it.ServiceExample4"
   },
   {
+    "name" : "service5",
+    "cls"  : "challenge.rf.it.ServiceExample5",
+    "dependencies" : [
+      "service1","service6"
+    ]
+  },
+  {
+    "name" : "service6",
+    "cls"  : "challenge.rf.it.ServiceExample6",
+    "dependencies" : [
+      "service3"
+    ]
+  },
+  {
     "name" : "disabled",
     "cls"  : "challenge.rf.it.ServiceExampleDisabled"
   }

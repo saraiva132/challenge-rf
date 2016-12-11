@@ -24,9 +24,9 @@ class systemTests {
   @Test
   def startServiceNoDependencies(): Unit = {
     sv.startAll()
-    Thread.sleep(1500)
+    Thread.sleep(2500)
     sv.stopAll()
-    Thread.sleep(1500)
+    Thread.sleep(2500)
     assert(sv.activeServices().size == 0)
   }
 }
