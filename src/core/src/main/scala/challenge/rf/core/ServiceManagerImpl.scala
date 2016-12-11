@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 import challenge.rf.api._
 import scala.collection.concurrent.TrieMap
-import scala.concurrent.Future
+import scala.concurrent.{Promise, Future}
 import scala.util.{Try, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -24,13 +24,10 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
         svState.synchronized {
           svState.state match {
             case NEW | DEAD | STOPPING =>
-              // Correct inconsistent states while holding the lock
-              val depsState = fromConfig(name).get.dependencies.
-                filter(services.get(_).get._1.state != RUNNING)
-
-              if (withDeps) depsState.foreach(start(_, withDeps = true))
-              else if (depsState.size > 0) return NOK
-
+              if (!withDeps && fromConfig(name).get.dependencies.
+                filter(services.get(_).get._1.state != RUNNING).
+                size > 0)
+                return NOK
               Try {
                 val svConf = fromConfig(name).get /* Safe to call get here*/
                 val service = {
@@ -73,6 +70,13 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
         val res = svState.synchronized {
           svState.state match {
             case RUNNING | STARTING =>
+
+              if (!withDeps && (config.filter(_.dependencies.exists(_ equals name)).
+                flatMap(it => services.get(it.name)).
+                filter(_._1.state == RUNNING).size > 0)) {
+                return NOK
+              }
+
               svState.state = STOPPING
               service.stop()
               try {
@@ -96,25 +100,30 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
   override def stopWithDependencies(name: String): Result = {
     fromConfig(name) match {
       case Some(serviceMetadata) =>
-        def loopDeps(metadata: ServiceMetadata): Result = {
-          val results = config.filter(_.dependencies.
+        def loopDeps(metadata: ServiceMetadata): Future[Result] = {
+          val p = Promise[Result]
+
+          Future {
+            val results = config.filter(_.dependencies.
             filter(services.get(_).get._1.state == RUNNING).  // Filter all deps which are running
             exists(_ equals metadata.name)). //filter by only dependant services
-            map(metadata => Future { loopDeps(metadata)}) // map to future recursive call
+            map(loopDeps(_)) // map to future recursive call
 
-          if (results.size > 0) {
             Future.sequence(results) onComplete {
               case Success(res) =>
-                if (res.forall(_ equals OK)) stop(metadata.name, true)
-                else return NOK
-              case _ => NOK
+                if (res.forall(_ equals OK)) {
+                  stop(metadata.name, true)
+                  p.success(OK)
+                }
+                else p.success(NOK)
+              case _ => p.success(NOK)
             }
           }
-          else stop(metadata.name, true)
-          OK
+          p.future
         }
 
         loopDeps(serviceMetadata)
+        OK
       case None => NOK
     }
   }
@@ -122,25 +131,30 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
   override def startWithDependencies(name: String): Result = {
     fromConfig(name) match {
       case Some(serviceMetadata) =>
-        def loopDeps(metadata: ServiceMetadata): Result = {
-          val results = metadata.dependencies.
-            filter(services.get(_).get._1.state != RUNNING).
-            flatMap(fromConfig(_)).
-            map(metadata => Future {
-              loopDeps(metadata)
-            })
-          if (results.size > 0) {
+        def loopDeps(metadata: ServiceMetadata): Future[Result] = {
+
+          val p = Promise[Result]
+
+          Future {
+            val results = metadata.dependencies.
+              filter(services.get(_).get._1.state != RUNNING).
+              flatMap(fromConfig(_)).
+              map(loopDeps(_))
+
             Future.sequence(results) onComplete {
               case Success(res) =>
-                if (res.forall(_ equals OK)) start(metadata.name, true)
-                else return NOK
-              case _ => NOK
+                if (res.forall(_ equals OK)) {
+                  val res = start(metadata.name, true)
+                  p.success(res)
+                }
+                else p.success(NOK)
+              case _ => p.success(NOK)
             }
           }
-          else start(metadata.name, true)
-          OK
+          p.future
         }
         loopDeps(serviceMetadata)
+        OK
       case None => NOK
     }
   }

@@ -25,6 +25,7 @@ class testServiceManager {
 
   @Test
   def startServiceNoDependencies(): Unit = {
+    sv.stopAll()
     sv.start("service2")
     Thread.sleep(300)
     sv.stop("service2")
@@ -34,6 +35,7 @@ class testServiceManager {
 
   @Test
   def startStopServiceNoDependencies(): Unit = {
+    sv.stopAll()
     Future { sv.start("service2") }
     Thread.sleep(100)
     Future { sv.stop("service2") }
@@ -43,6 +45,7 @@ class testServiceManager {
 
   @Test
   def startServiceDependencies(): Unit = {
+    sv.stopAll()
     sv.start("service1") match {
       case OK => assert(false)
       case NOK => assert(true)
@@ -50,7 +53,19 @@ class testServiceManager {
   }
 
   @Test
+  def stopServiceDependencies(): Unit = {
+    sv.stopAll()
+    sv.startWithDependencies("service1")
+    Thread.sleep(1000)
+    sv.stop("service2") match {
+      case OK => assert(false)
+      case NOK => assert(true)
+    }
+  }
+
+  @Test
   def startMultipleServiceNoDependencies(): Unit = {
+    sv.stopAll()
     sv.start("service2")
     sv.start("service3")
     sv.start("service4")
@@ -64,6 +79,7 @@ class testServiceManager {
 
   @Test
   def startServiceWithDependencies(): Unit = {
+    sv.stopAll()
     sv.startWithDependencies("service1")
     Thread.sleep(1000)
     sv.stopWithDependencies("service2")
@@ -75,6 +91,7 @@ class testServiceManager {
 
   @Test
   def disabledServiceDependencies(): Unit = {
+    sv.stopAll()
     sv.start("disabled") match {
       case OK => assert(false)
       case NOK => assert(true)
@@ -83,7 +100,15 @@ class testServiceManager {
     assert(sv.disabledServices().size == 1)
   }
 
-
+  @Test
+  def stressTestNumber1() :Unit = {
+    sv.stopAll()
+    Future { sv.startWithDependencies("service1") }
+    Thread.sleep(500)
+    sv.stopWithDependencies("service2")
+    Thread.sleep(700)
+    assert(sv.activeServices().size == 1)
+  }
 }
 
 
