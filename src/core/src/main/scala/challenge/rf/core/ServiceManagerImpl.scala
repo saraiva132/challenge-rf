@@ -1,13 +1,14 @@
 package challenge.rf.core
 
-import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.{LinkedBlockingQueue, TimeUnit, ThreadPoolExecutor, ThreadFactory}
+import java.util.concurrent.atomic.{AtomicInteger, AtomicBoolean}
 
 import challenge.rf.api._
 import scala.collection.concurrent.TrieMap
-import scala.concurrent.{Await, Promise, Future}
+import scala.concurrent._
 import scala.util.{Try, Success}
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
+import challenge.rf.core.Globals.ec
 
 class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager {
 
@@ -17,7 +18,7 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
    * @param config - config
    * @param loader - loader provider
    */
-  def this(config : String, loader : ServiceLoader) {
+  def this(config: String, loader: ServiceLoader) {
     this(loader.loadAndValidate(config) match {
       case Some(conf) => conf
       case None => Vector.empty
@@ -35,7 +36,7 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
   private val fromConfig = (name: String) => config.find(_.name equals name)
 
   /* How much time should a call with dependencies block for a result */
-  private val waitForDependencies : FiniteDuration = 60 seconds
+  private val waitForDependencies: FiniteDuration = 60 seconds
 
   override def start(name: String, withDeps: Boolean = false): Result = {
     services.get(name) match {
@@ -122,10 +123,15 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
         def loopDeps(metadata: ServiceMetadata): Future[Result] = {
           val p = Promise[Result]
 
+          val validState: State => Boolean = state => {
+            if ((state == RUNNING) || (state == STOPPING)) true
+            else false
+          }
+
           Future {
             val results = config.filter(_.dependencies.
-            filter(services.get(_).get._1.state == RUNNING).  // Filter all deps which are running
             exists(_ equals metadata.name)). //filter by only dependant services
+            filter(meta => validState(services.get(meta.name).get._1.state)).  // Filter all deps which are running or Stopping
             map(loopDeps(_)) // map to future recursive call
 
             Future.sequence(results) onComplete {

@@ -11,15 +11,15 @@
     "cls"  : "challenge.rf.core.ServiceExample2"
   },
   {
+    "name" : "service4",
+    "cls"  : "challenge.rf.core.ServiceExample4"
+  },
+  {
     "name" : "service3",
     "cls"  : "challenge.rf.core.ServiceExample3",
     "dependencies" : [
       "service2"
     ]
-  },
-  {
-    "name" : "service4",
-    "cls"  : "challenge.rf.core.ServiceExample4"
   },
   {
     "name" : "disabled",
