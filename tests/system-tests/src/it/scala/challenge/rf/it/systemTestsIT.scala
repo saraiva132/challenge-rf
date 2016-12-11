@@ -1,9 +1,9 @@
 package challenge.rf.it
 
 import java.io.File
-
 import challenge.rf.core.{ServiceManagerImpl, ServiceLoaderImpl}
 import org.junit.Test
+import org.apache.log4j.xml.DOMConfigurator
 
 object systemTests {
   val pwd = new File(".").getCanonicalPath
@@ -14,6 +14,8 @@ object systemTests {
   val serviceLoader = new ServiceLoaderImpl()
   val services = serviceLoader.loadAndValidate(db).get
   val sv = new ServiceManagerImpl(services)
+  val log4jConfig = resourcesDir + "/logging/log4j.xml"
+  DOMConfigurator.configureAndWatch(log4jConfig,10000)
 }
 
 import systemTests._
@@ -22,9 +24,9 @@ class systemTests {
   @Test
   def startServiceNoDependencies(): Unit = {
     sv.startAll()
-    Thread.sleep(3000)
+    Thread.sleep(1500)
     sv.stopAll()
-    Thread.sleep(3000)
+    Thread.sleep(1500)
     assert(sv.activeServices().size == 0)
   }
 }

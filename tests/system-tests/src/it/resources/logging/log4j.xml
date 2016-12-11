@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+
+    <!-- ================================= -->
+    <!-- Preserve messages in a local file -->
+    <!-- ================================= -->
+
+    <appender name="CH-RF" class="org.apache.log4j.RollingFileAppender">
+        <param name="File" value="log/service.log"/>
+        <param name="Append" value="true"/>
+        <param name="Encoding" value="UTF-8"/>
+        <param name="MaxFileSize" value="5MB"/>
+        <param name="MaxBackupIndex" value="1"/>
+
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %-5p %-20c{1} [%-20t] %m%n"/>
+        </layout>
+    </appender>
+
+    <category name="challenge.rf" additivity="false">
+        <priority value="INFO"/>
+        <appender-ref ref="CH-RF"/>
+    </category>
+
+    <root>
+        <level value="INFO"/>
+        <appender-ref ref="CH-RF"/>
+    </root>
+</log4j:configuration>

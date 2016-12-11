@@ -1,75 +1,81 @@
 package challenge.rf.it
 
 import challenge.rf.api.{OK, Result, Service}
+import org.apache.log4j.Logger
 
-class ServiceExample1 extends Service {
+trait ServiceExample extends Service {
+  val logger = Logger.getLogger(classOf[ServiceExample])
+}
+
+class ServiceExample1 extends ServiceExample {
+
   override def start(): Result = {
     Thread.sleep(200)
-    println("Starting ServiceExample1")
+    logger.debug("Starting ServiceExample1")
     OK
   }
 
   override def stop(): Result = {
     Thread.sleep(200)
-    println("Stopping ServiceExample1")
+    logger.debug("Stopping ServiceExample1")
     OK
   }
 
   override def run(): Unit = {
-    println("Running ServiceExample1")
+    logger.debug("Running ServiceExample1")
   }
 }
 
-class ServiceExample2 extends Service {
+class ServiceExample2 extends ServiceExample {
   override def start(): Result = {
     Thread.sleep(200)
-    println("Starting ServiceExample2")
+    logger.debug("Starting ServiceExample2")
     OK
   }
 
   override def stop(): Result = {
     Thread.sleep(200)
-    println("Stopping ServiceExample2")
+    logger.debug("Stopping ServiceExample2")
     OK
   }
 
   override def run(): Unit = {
-    println("Running ServiceExample2")
+    logger.debug("Running ServiceExample2")
   }
 }
 
-class ServiceExample3 extends Service {
+class ServiceExample3 extends ServiceExample {
   override def start(): Result = {
     Thread.sleep(200)
-    println("Starting ServiceExample3")
+    logger.debug("Starting ServiceExample3")
     OK
   }
 
   override def stop(): Result = {
     Thread.sleep(200)
-    println("Stopping ServiceExample3")
+    logger.debug("Stopping ServiceExample3")
     OK
   }
 
   override def run(): Unit = {
-    println("Running ServiceExample3")
+    logger.debug("Running ServiceExample3")
   }
 }
 
-class ServiceExample4 extends Service {
+class ServiceExample4 extends ServiceExample {
   override def start(): Result = {
     Thread.sleep(200)
-    println("Starting ServiceExample4")
+    logger.debug("Starting ServiceExample4")
     OK
   }
 
   override def stop(): Result = {
     Thread.sleep(200)
-    println("Stopping ServiceExample4")
+    logger.debug("Stopping ServiceExample4")
     OK
   }
 
   override def run(): Unit = {
-    println("Running ServiceExample4")
+    logger.debug("Running ServiceExample4")
   }
 }
