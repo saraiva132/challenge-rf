@@ -1,10 +1,10 @@
 package challenge.rf.it
 
 import challenge.rf.api.{OK, Result, Service}
-import org.apache.log4j.Logger
+import org.slf4j.LoggerFactory
 
 trait ServiceExample extends Service {
-  val logger = Logger.getLogger(classOf[ServiceExample])
+  val logger = LoggerFactory.getLogger(classOf[ServiceExample])
 }
 
 class ServiceExample1 extends ServiceExample {

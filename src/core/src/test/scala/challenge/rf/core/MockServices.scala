@@ -4,13 +4,13 @@ import challenge.rf.api.{OK, Result, Service}
 
 class ServiceExample1 extends Service {
   override def start(): Result = {
-    Thread.sleep(1000)
+    Thread.sleep(200)
     println("Starting ServiceExample1")
     OK
   }
 
   override def stop(): Result = {
-    Thread.sleep(1000)
+    Thread.sleep(200)
     println("Stopping ServiceExample1")
     OK
   }
@@ -22,13 +22,13 @@ class ServiceExample1 extends Service {
 
 class ServiceExample2 extends Service {
   override def start(): Result = {
-    Thread.sleep(1000)
+    Thread.sleep(200)
     println("Starting ServiceExample2")
     OK
   }
 
   override def stop(): Result = {
-    Thread.sleep(1000)
+    Thread.sleep(200)
     println("Stopping ServiceExample2")
     OK
   }
@@ -40,13 +40,13 @@ class ServiceExample2 extends Service {
 
 class ServiceExample3 extends Service {
   override def start(): Result = {
-    Thread.sleep(1000)
+    Thread.sleep(200)
     println("Starting ServiceExample3")
     OK
   }
 
   override def stop(): Result = {
-    Thread.sleep(1000)
+    Thread.sleep(200)
     println("Stopping ServiceExample3")
     OK
   }
@@ -58,13 +58,13 @@ class ServiceExample3 extends Service {
 
 class ServiceExample4 extends Service {
   override def start(): Result = {
-    Thread.sleep(1000)
+    Thread.sleep(200)
     println("Starting ServiceExample4")
     OK
   }
 
   override def stop(): Result = {
-    Thread.sleep(1000)
+    Thread.sleep(200)
     println("Stopping ServiceExample4")
     OK
   }

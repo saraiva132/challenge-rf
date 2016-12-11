@@ -113,9 +113,9 @@ class testServiceManager {
   @Test
   def startAllStopAll() : Unit = {
     sv.startAll()
-    Thread.sleep(5000)
+    Thread.sleep(500)
     sv.stopAll()
-    Thread.sleep(5000)
+    Thread.sleep(500)
     assert(sv.activeServices().size == 0)
   }
 }

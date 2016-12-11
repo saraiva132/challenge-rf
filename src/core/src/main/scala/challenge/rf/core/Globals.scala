@@ -9,7 +9,7 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 object Globals {
   implicit lazy val ec: ExecutionContextExecutor = {
 
-    val nThreads = 16
+    val nThreads = 8
 
     trait format {
       val count: AtomicInteger = new AtomicInteger(0)
@@ -25,6 +25,6 @@ object Globals {
     }
 
     ExecutionContext.fromExecutor(new ThreadPoolExecutor(nThreads, nThreads,
-      0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue[Runnable], new workflowThreadFactory("scala-worker-pool-%d")))
+      0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue[Runnable], new workflowThreadFactory("service-worker-pool-%d")))
   }
 }

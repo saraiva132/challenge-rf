@@ -1,8 +1,6 @@
 package challenge.rf.core
 
-import java.util.concurrent.{LinkedBlockingQueue, TimeUnit, ThreadPoolExecutor, ThreadFactory}
-import java.util.concurrent.atomic.{AtomicInteger, AtomicBoolean}
-
+import java.util.concurrent.atomic.AtomicBoolean
 import challenge.rf.api._
 import scala.collection.concurrent.TrieMap
 import scala.concurrent._
