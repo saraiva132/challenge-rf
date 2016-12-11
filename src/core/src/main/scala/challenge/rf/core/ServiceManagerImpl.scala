@@ -4,9 +4,10 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 import challenge.rf.api._
 import scala.collection.concurrent.TrieMap
-import scala.concurrent.{Promise, Future}
+import scala.concurrent.{Await, Promise, Future}
 import scala.util.{Try, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
 
 class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager {
 
@@ -32,6 +33,9 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
   config.foreach(it => services.put(it.name, (ServiceState(), null, null, new AtomicBoolean(false))))
 
   private val fromConfig = (name: String) => config.find(_.name equals name)
+
+  /* How much time should a call with dependencies block for a result */
+  private val waitForDependencies : FiniteDuration = 60 seconds
 
   override def start(name: String, withDeps: Boolean = false): Result = {
     services.get(name) match {
@@ -137,8 +141,7 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
           p.future
         }
 
-        loopDeps(serviceMetadata)
-        OK
+        Await.result(loopDeps(serviceMetadata), atMost = waitForDependencies)
       case None => NOK
     }
   }
@@ -168,8 +171,7 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
           }
           p.future
         }
-        loopDeps(serviceMetadata)
-        OK
+        Await.result(loopDeps(serviceMetadata), atMost = waitForDependencies)
       case None => NOK
     }
   }

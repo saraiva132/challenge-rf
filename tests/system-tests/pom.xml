@@ -17,6 +17,17 @@
 
 
     <dependencies>
+
+        <dependency>
+            <groupId>challenge-rf</groupId>
+            <artifactId>challenge-rf-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>challenge-rf</groupId>
+            <artifactId>challenge-rf-core</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
@@ -57,7 +68,7 @@
 
                             <configuration>
                                 <includes>
-                                    <include>**/*.*</include>
+                                    <include>**/*IT.*</include>
                                 </includes>
                             </configuration>
                             <executions>

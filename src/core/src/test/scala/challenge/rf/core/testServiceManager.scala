@@ -70,9 +70,9 @@ class testServiceManager {
     sv.start("service3")
     sv.start("service4")
     Thread.sleep(300)
-    sv.stop("service2")
     sv.stop("service3")
     sv.stop("service4")
+    sv.stop("service2")
     Thread.sleep(500)
     assert(sv.activeServices().size == 0)
   }
