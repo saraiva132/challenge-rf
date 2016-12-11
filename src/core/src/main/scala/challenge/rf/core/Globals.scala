@@ -7,6 +7,11 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
 
 object Globals {
+
+  /**
+   * Configurable executionContext. To be honest scala is pretty lazy with its ec. Its an implicit val
+   * which only allows a threadPool with nThreads = nCPU. If more threads needed use this ec.
+   */
   implicit lazy val ec: ExecutionContextExecutor = {
 
     val nThreads = 8
