@@ -26,7 +26,7 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
 
   /* Override means a Stop can override a concurrent Start */
   type Override = AtomicBoolean
-  /* Efficient hashmap that handles concurrent accesses for free */
+  /* Efficient Trie(O(log(32,n))) that handles concurrent accesses for free */
   private val services = TrieMap.empty[String, (ServiceState, Service, Thread, Override)]
   /* Load config. Initially there are no services active so lets just put the entries null and the state NEW */
   config.foreach(it => services.put(it.name, (ServiceState(), null, null, new AtomicBoolean(false))))
