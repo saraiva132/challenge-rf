@@ -31,6 +31,7 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
   /* Load config. Initially there are no services active so lets just put the entries null and the state NEW */
   config.foreach(it => services.put(it.name, (ServiceState(), null, null, new AtomicBoolean(false))))
 
+  /* get service metadata from config helper */
   private val fromConfig = (name: String) => config.find(_.name equals name)
 
   /* How much time should a call with dependencies block for a result */
@@ -131,7 +132,7 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
           Future {
             val results = config.filter(_.dependencies.
             exists(_ equals metadata.name)). //filter by only dependant services
-            filter(meta => validState(services.get(meta.name).get._1.state)).  // Filter all deps which are running or Stopping
+            filter(meta => validState(services.get(meta.name).get._1.state)).  // Filter all deps in valid state
             map(loopDeps(_)) // map to future recursive call
 
             Future.sequence(results) onComplete {
