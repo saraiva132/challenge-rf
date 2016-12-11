@@ -10,6 +10,21 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager {
 
+  /**
+   * Alternative builder for java users. Send me a good config file though :(
+   *
+   * @param config - config
+   * @param loader - loader provider
+   */
+  def this(config : String, loader : ServiceLoader) {
+    this(loader.loadAndValidate(config) match {
+      case Some(conf) => conf
+      case None => Vector.empty
+    })
+
+  }
+
+  /* Override means a Stop can override a concurrent Start */
   type Override = AtomicBoolean
   /* Efficient hashmap that handles concurrent accesses for free */
   private val services = TrieMap.empty[String, (ServiceState, Service, Thread, Override)]
