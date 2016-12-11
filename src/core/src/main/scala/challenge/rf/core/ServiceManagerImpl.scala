@@ -56,17 +56,19 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
                 svState.state = STARTING
                 services.update(name, (svState, service, null, ow))
                 val result = service.start()
-                if (ow.get()) {
-                  service.stop()
-                  svState.state = DEAD
-                  return NOK
+                ow.get() match { /* Match override variable to see if any stop was called */
+                  case false =>
+                    val t = new Thread(service)
+                    t.setDaemon(true)
+                    t.start()
+                    svState.state = RUNNING
+                    services.update(name, (svState, service, t, ow))
+                    result
+                  case true =>
+                    service.stop()
+                    svState.state = DEAD
+                    NOK
                 }
-                val t = new Thread(service)
-                t.setDaemon(true)
-                t.start()
-                svState.state = RUNNING
-                services.update(name, (svState, service, t, ow))
-                result
               }.recover { case _ =>
                 svState.state = DISABLED
                 NOK
@@ -122,7 +124,7 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
           val p = Promise[Result]
 
           val validState: State => Boolean = state => {
-            if ((state == RUNNING) || (state == STOPPING)) true
+            if ((state == RUNNING) || (state == STOPPING) || (state == STARTING)) true
             else false
           }
 

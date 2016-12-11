@@ -104,7 +104,7 @@ class testServiceManager {
   def stressTestNumber1() :Unit = {
     sv.stopAll()
     Future { sv.startWithDependencies("service1") }
-    Thread.sleep(500)
+    Thread.sleep(450)
     sv.stopWithDependencies("service2")
     Thread.sleep(700)
     assert(sv.activeServices().size == 1)
