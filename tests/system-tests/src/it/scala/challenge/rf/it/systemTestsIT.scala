@@ -2,7 +2,7 @@ package challenge.rf.it
 
 import java.io.File
 import challenge.rf.core.{ServiceManagerImpl, ServiceLoaderImpl}
-import org.junit.Test
+import org.junit._
 import org.apache.log4j.xml.DOMConfigurator
 
 object systemTests {

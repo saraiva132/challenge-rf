@@ -80,6 +80,7 @@
 
                                 <execution>
                                     <id>system-tests</id>
+                                    <phase>integration-test</phase>
                                     <goals>
                                         <goal>integration-test</goal>
                                     </goals>
@@ -107,6 +108,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.12</version>
                 <executions>
                     <execution>
                         <id>add-source</id>
