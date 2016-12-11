@@ -15,7 +15,7 @@ object systemTests {
   val services = serviceLoader.loadAndValidate(db).get
   val sv = new ServiceManagerImpl(services)
   val log4jConfig = resourcesDir + "/logging/log4j.xml"
-  DOMConfigurator.configureAndWatch(log4jConfig,10000)
+  DOMConfigurator.configureAndWatch(log4jConfig,10)
 }
 
 import systemTests._
