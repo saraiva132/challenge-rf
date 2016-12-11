@@ -20,5 +20,9 @@
   {
     "name" : "service4",
     "cls"  : "challenge.rf.core.ServiceExample4"
+  },
+  {
+    "name" : "disabled",
+    "cls"  : "challenge.rf.core.ServiceExampleDisabled"
   }
 ]

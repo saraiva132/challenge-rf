@@ -4,6 +4,9 @@ import java.io.File
 
 import challenge.rf.api.{NOK, OK}
 import org.junit.Test
+import scala.concurrent.ExecutionContext.Implicits.global
+
+import scala.concurrent.Future
 
 object testServiceManager {
   val pwd = new File(".").getCanonicalPath
@@ -20,23 +23,25 @@ class testServiceManager {
 
   import testServiceManager._
 
-  //@Test
+  @Test
   def startServiceNoDependencies(): Unit = {
     sv.start("service2")
-    Thread.sleep(3000)
+    Thread.sleep(300)
     sv.stop("service2")
-    Thread.sleep(5000)
+    Thread.sleep(500)
+    assert(sv.activeServices().size == 0)
   }
 
-  //@Test
+  @Test
   def startStopServiceNoDependencies(): Unit = {
-    sv.start("service2")
+    Future { sv.start("service2") }
     Thread.sleep(100)
-    sv.stop("service2")
-    Thread.sleep(6000)
+    Future { sv.stop("service2") }
+    Thread.sleep(600)
+    assert(sv.activeServices().size == 0)
   }
 
-  //@Test
+  @Test
   def startServiceDependencies(): Unit = {
     sv.start("service1") match {
       case OK => assert(false)
@@ -44,27 +49,40 @@ class testServiceManager {
     }
   }
 
-  //@Test
+  @Test
   def startMultipleServiceNoDependencies(): Unit = {
     sv.start("service2")
     sv.start("service3")
     sv.start("service4")
-    Thread.sleep(3000)
+    Thread.sleep(300)
     sv.stop("service2")
     sv.stop("service3")
     sv.stop("service4")
-    Thread.sleep(5000)
+    Thread.sleep(500)
+    assert(sv.activeServices().size == 0)
   }
 
   @Test
   def startServiceWithDependencies(): Unit = {
     sv.startWithDependencies("service1")
-    Thread.sleep(10000)
+    Thread.sleep(1000)
     sv.stopWithDependencies("service2")
-    Thread.sleep(5000)
+    Thread.sleep(500)
     sv.stopAll()
-    Thread.sleep(5000)
+    Thread.sleep(500)
+    assert(sv.activeServices().size == 0)
   }
+
+  @Test
+  def disabledServiceDependencies(): Unit = {
+    sv.start("disabled") match {
+      case OK => assert(false)
+      case NOK => assert(true)
+    }
+
+    assert(sv.disabledServices().size == 1)
+  }
+
 
 }
 
