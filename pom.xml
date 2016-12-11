@@ -9,11 +9,6 @@
     <name>challenge-rf</name>
     <description>Root pom</description>
 
-    <prerequisites>
-        <maven>3.3.9</maven>
-    </prerequisites>
-
-
     <properties>
         <java.source.level>1.8</java.source.level>
         <java.target.level>1.8</java.target.level>
@@ -166,7 +161,7 @@
                         <childDelegation>true</childDelegation>
                         <forkMode>once</forkMode>
                         <includes>
-                            <include>**/*.scala</include>
+                            <include>**/test*.*</include>
                         </includes>
                     </configuration>
                 </plugin>
