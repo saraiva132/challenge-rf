@@ -18,7 +18,7 @@ trait ServiceManager {
   /**
    * Start a service and start all dependencies if needed. Blocking method.
    *
-   * This service will stop all dependencies and transitive dependencies that are not running or stopping.
+   * This service will start all dependencies and transitive dependencies that are not running or stopping.
    *
    * @param name -> Name of the service
    * @return - Operation Result: OK/NOK

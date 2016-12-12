@@ -47,7 +47,8 @@ class ServiceLoaderImpl extends ServiceLoader {
     val detectDuplicates = metadata.size == metadata.map(_.name).distinct.size
 
     /* Invalid dependencies*/
-    val detectInvalidDependencies = metadata.flatMap(_.dependencies).distinct.forall( it => metadata.exists( _.name equals it))
+    val detectInvalidDependencies = metadata.flatMap(_.dependencies).
+      distinct.forall( it => metadata.exists( _.name equals it))
 
     /* Cyclic dependencies */
     def detectGraphLoop(sv: ServiceMetadata) = {

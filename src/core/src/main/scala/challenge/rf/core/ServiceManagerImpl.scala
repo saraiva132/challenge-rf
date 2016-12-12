@@ -95,9 +95,8 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
 
               if (!withDeps && (config.filter(_.dependencies.exists(_ equals name)).
                 flatMap(it => services.get(it.name)).
-                filter(_._1.state == RUNNING).size > 0)) {
-                 NOK
-              }
+                filter(_._1.state == RUNNING).size > 0))
+                NOK
 
               else {
                 svState.state = STOPPING
@@ -133,20 +132,20 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
           }
 
           Future {
-            val results = config.filter(_.dependencies.
-            exists(_ equals metadata.name)). //filter by only dependant services
-            filter(meta => validState(services.get(meta.name).get._1.state)).  // Filter all deps in valid state
-            map(loopDeps(_)) // map to future recursive call
+              val results = config.filter(_.dependencies.
+                exists(_ equals metadata.name)). //filter by only dependant services
+                filter(meta => validState(services.get(meta.name).get._1.state)).  // Filter all deps in valid state
+                map(loopDeps(_)) // map to future recursive call
 
-            Future.sequence(results) onComplete {
-              case Success(res) =>
-                if (res.forall(_ equals OK)) {
-                  stop(metadata.name, true)
-                  p.success(OK)
-                }
-                else p.success(NOK)
-              case _ => p.success(NOK)
-            }
+              Future.sequence(results) onComplete {
+                case Success(res) =>
+                  if (res.forall(_ equals OK)) {
+                    stop(metadata.name, true)
+                    p.success(OK)
+                  }
+                  else p.success(NOK)
+                case _ => p.success(NOK)
+              }
           }
           p.future
         }
@@ -164,20 +163,20 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
           val p = Promise[Result]
 
           Future {
-            val results = metadata.dependencies.
-              filter(services.get(_).get._1.state != RUNNING).
-              flatMap(fromConfig(_)).
-              map(loopDeps(_))
+              val results = metadata.dependencies.
+                filter(services.get(_).get._1.state != RUNNING).
+                flatMap(fromConfig(_)).
+                map(loopDeps(_))
 
-            Future.sequence(results) onComplete {
-              case Success(res) =>
-                if (res.forall(_ equals OK)) {
-                  val res = start(metadata.name, true)
-                  p.success(res)
-                }
-                else p.success(NOK)
-              case _ => p.success(NOK)
-            }
+              Future.sequence(results) onComplete {
+                case Success(res) =>
+                  if (res.forall(_ equals OK)) {
+                    val res = start(metadata.name, true)
+                    p.success(res)
+                  }
+                  else p.success(NOK)
+                case _ => p.success(NOK)
+              }
           }
           p.future
         }
