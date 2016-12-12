@@ -25,11 +25,11 @@ object Globals {
       }
     }
 
-    class workflowThreadFactory(f: String) extends ThreadFactory with format {
+    class ServiceThreadFactory(f: String) extends ThreadFactory with format {
       override def newThread(r: Runnable) = formatThreadName(f, new Thread(r))
     }
 
     ExecutionContext.fromExecutor(new ThreadPoolExecutor(nThreads, nThreads,
-      0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue[Runnable], new workflowThreadFactory("service-worker-pool-%d")))
+      0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue[Runnable], new ServiceThreadFactory("service-worker-pool-%d")))
   }
 }

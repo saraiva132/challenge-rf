@@ -57,7 +57,8 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
                 svState.state = STARTING
                 services.update(name, (svState, service, null, ow))
                 val result = service.start()
-                ow.get() match { /* Match override variable to see if any stop was called */
+                ow.get() match {
+                  /* Match override variable to see if any stop was called */
                   case false =>
                     val t = new Thread(service)
                     t.setDaemon(true)
@@ -95,20 +96,22 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
               if (!withDeps && (config.filter(_.dependencies.exists(_ equals name)).
                 flatMap(it => services.get(it.name)).
                 filter(_._1.state == RUNNING).size > 0)) {
-                return NOK
+                 NOK
               }
 
-              svState.state = STOPPING
-              service.stop()
-              try {
-                thread.join(3000)
-              } finally {
-                if (thread.isAlive)
-                  thread.stop() // Let the service have a chance to shutdown
+              else {
+                svState.state = STOPPING
+                val result = service.stop()
+                try {
+                  thread.join(3000)
+                } finally {
+                  if (thread.isAlive)
+                    thread.stop() // Let the service have a chance to shutdown
+                }
+                svState.state = DEAD
+                services.update(name, (svState, service, null, ow))
+                result
               }
-              svState.state = DEAD
-              services.update(name, (svState, service, null, ow))
-              OK
             case NEW | DEAD | STOPPING | DISABLED => OK
           }
         }
@@ -184,10 +187,14 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
   }
 
   override def stopAll(): Unit = config.
-    foreach(svMetadata => Future { stopWithDependencies( svMetadata.name )})
+    foreach(svMetadata => Future {
+      stopWithDependencies(svMetadata.name)
+    })
 
   override def startAll(): Unit = config.
-    foreach(svMetadata => Future { startWithDependencies(svMetadata.name) })
+    foreach(svMetadata => Future {
+      startWithDependencies(svMetadata.name)
+    })
 
   def activeServices(): Vector[ServiceMetadata] =
     services.filter { case (k, v) => v._1.state == RUNNING }.
