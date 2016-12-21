@@ -28,5 +28,7 @@ class systemTests {
     sv.stopAll()
     Thread.sleep(2500)
     assert(sv.activeServices().size == 0)
+    assert(sv.disabledServices().size == 1)
+
   }
 }

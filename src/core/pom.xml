@@ -43,6 +43,11 @@
             <artifactId>json4s-jackson_2.11</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.chuusai</groupId>
+            <artifactId>shapeless_2.11</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

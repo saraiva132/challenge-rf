@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/challenge-rf.iml" filepath="$PROJECT_DIR$/challenge-rf.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/api/challenge-rf-api.iml" filepath="$PROJECT_DIR$/src/api/challenge-rf-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/core/challenge-rf-core.iml" filepath="$PROJECT_DIR$/src/core/challenge-rf-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tests/system-tests/challenge-rf-system-tests.iml" filepath="$PROJECT_DIR$/tests/system-tests/challenge-rf-system-tests.iml" />
+    </modules>
+  </component>
+</project>

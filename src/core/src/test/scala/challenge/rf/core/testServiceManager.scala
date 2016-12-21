@@ -5,7 +5,6 @@ import java.io.File
 import challenge.rf.api.{NOK, OK}
 import org.junit.Test
 import scala.concurrent.ExecutionContext.Implicits.global
-
 import scala.concurrent.Future
 
 object testServiceManager {
@@ -28,9 +27,7 @@ class testServiceManager {
     sv.stopAll()
     Thread.sleep(750)
     sv.start("service2")
-    Thread.sleep(300)
     sv.stop("service2")
-    Thread.sleep(500)
     assert(sv.activeServices().size == 0)
   }
 
@@ -110,11 +107,9 @@ class testServiceManager {
   @Test
   def stressTestNumber1() :Unit = {
     sv.stopAll()
-    Thread.sleep(750)
-    Future { sv.startWithDependencies("service1") }
-    Thread.sleep(450)
+    Thread.sleep(1200)
+    sv.startWithDependencies("service1")
     sv.stopWithDependencies("service2")
-    Thread.sleep(700)
     assert(sv.activeServices().size == 1)
   }
 

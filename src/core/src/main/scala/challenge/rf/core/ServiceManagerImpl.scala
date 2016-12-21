@@ -7,6 +7,8 @@ import scala.concurrent._
 import scala.util.{Try, Success}
 import scala.concurrent.duration._
 import challenge.rf.core.Globals.ec
+import shapeless.{::, HList, HNil}
+
 
 class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager {
 
@@ -19,13 +21,16 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
   def this(config: String, loader: ServiceLoader) {
     this(loader.loadAndValidate(config) match {
       case Some(conf) => conf
-      case None => Vector.empty
+      case None => throw new Exception("Bad configuration file")
     })
 
   }
 
   /* Override means a Stop can override a concurrent Start */
   type Override = AtomicBoolean
+
+  private val shapeless = TrieMap.empty[String, ServiceState :: Service :: Thread :: Override]
+
   /* Efficient Trie(O(log(32,n))) that handles concurrent accesses for free */
   private val services = TrieMap.empty[String, (ServiceState, Service, Thread, Override)]
   /* Load config. Initially there are no services active so lets just put the entries null and the state NEW */
@@ -125,27 +130,23 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
       case Some(serviceMetadata) =>
         def loopDeps(metadata: ServiceMetadata): Future[Result] = {
           val p = Promise[Result]
-
-          val validState: State => Boolean = state => {
-            if ((state == RUNNING) || (state == STOPPING) || (state == STARTING)) true
-            else false
-          }
-
           Future {
-              val results = config.filter(_.dependencies.
+            val results = config.filter(_.dependencies.
                 exists(_ equals metadata.name)). //filter by only dependant services
-                filter(meta => validState(services.get(meta.name).get._1.state)).  // Filter all deps in valid state
+               filter{ it =>
+                  val state = services.get(it.name).get._1
+                  state.synchronized(state.state == RUNNING)}.  // Filter all deps in valid state
                 map(loopDeps(_)) // map to future recursive call
 
-              Future.sequence(results) onComplete {
-                case Success(res) =>
-                  if (res.forall(_ equals OK)) {
-                    stop(metadata.name, true)
-                    p.success(OK)
-                  }
-                  else p.success(NOK)
-                case _ => p.success(NOK)
-              }
+            Future.sequence(results) onComplete {
+              case Success(res) =>
+                if (res.forall(_ equals OK)) {
+                  stop(metadata.name, true)
+                  p.success(OK)
+                }
+                else p.success(NOK)
+              case _ => p.success(NOK)
+            }
           }
           p.future
         }
@@ -163,20 +164,23 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
           val p = Promise[Result]
 
           Future {
-              val results = metadata.dependencies.
-                filter(services.get(_).get._1.state != RUNNING).
-                flatMap(fromConfig(_)).
-                map(loopDeps(_))
+            val results = metadata.dependencies.
+              filter { it =>
+                val state = services.get(it).get._1
+                state.synchronized(state.state != RUNNING)
+              }.
+              flatMap(fromConfig(_)).
+              map(loopDeps(_))
 
-              Future.sequence(results) onComplete {
-                case Success(res) =>
-                  if (res.forall(_ equals OK)) {
-                    val res = start(metadata.name, true)
-                    p.success(res)
-                  }
-                  else p.success(NOK)
-                case _ => p.success(NOK)
-              }
+            Future.sequence(results) onComplete {
+              case Success(res) =>
+                if (res.forall(_ equals OK)) {
+                  val res = start(metadata.name, true)
+                  p.success(res)
+                }
+                else p.success(NOK)
+              case _ => p.success(NOK)
+            }
           }
           p.future
         }

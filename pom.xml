@@ -20,6 +20,8 @@
         <version.json4s>3.5.0</version.json4s>
         <version.log4j>1.2.17</version.log4j>
         <version.slf4j>1.7.5</version.slf4j>
+        <version.shapeless>2.3.2</version.shapeless>
+
     </properties>
 
     <modules>
@@ -80,6 +82,12 @@
                 <groupId>org.json4s</groupId>
                 <artifactId>json4s-jackson_2.11</artifactId>
                 <version>${version.json4s}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.chuusai</groupId>
+                <artifactId>shapeless_2.11</artifactId>
+                <version>${version.shapeless}</version>
             </dependency>
 
             <dependency>

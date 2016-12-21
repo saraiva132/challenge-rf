@@ -4,10 +4,10 @@ import challenge.rf.api.{OK, Result, Service}
 import org.slf4j.LoggerFactory
 
 trait ServiceExample extends Service {
-  val logger = LoggerFactory.getLogger(classOf[ServiceExample])
 }
 
 class ServiceExample1 extends ServiceExample {
+  val logger = LoggerFactory.getLogger(classOf[ServiceExample1])
 
   override def start(): Result = {
     Thread.sleep(200)
@@ -30,6 +30,7 @@ class ServiceExample1 extends ServiceExample {
 }
 
 class ServiceExample2 extends ServiceExample {
+  val logger = LoggerFactory.getLogger(classOf[ServiceExample2])
   override def start(): Result = {
     Thread.sleep(200)
     println("Starting ServiceExample2")
@@ -51,6 +52,8 @@ class ServiceExample2 extends ServiceExample {
 }
 
 class ServiceExample3 extends ServiceExample {
+  val logger = LoggerFactory.getLogger(classOf[ServiceExample3])
+
   override def start(): Result = {
     Thread.sleep(200)
     println("Starting ServiceExample3")
@@ -72,6 +75,8 @@ class ServiceExample3 extends ServiceExample {
 }
 
 class ServiceExample4 extends ServiceExample {
+  val logger = LoggerFactory.getLogger(classOf[ServiceExample4])
+
   override def start(): Result = {
     Thread.sleep(200)
     println("Starting ServiceExample4")
@@ -93,6 +98,9 @@ class ServiceExample4 extends ServiceExample {
 }
 
 class ServiceExample5 extends ServiceExample {
+
+  val logger = LoggerFactory.getLogger(classOf[ServiceExample5])
+
   override def start(): Result = {
     Thread.sleep(200)
     println("Starting ServiceExample5")
@@ -114,6 +122,8 @@ class ServiceExample5 extends ServiceExample {
 }
 
 class ServiceExample6 extends ServiceExample {
+  val logger = LoggerFactory.getLogger(classOf[ServiceExample6])
+
   override def start(): Result = {
     Thread.sleep(200)
     println("Starting ServiceExample6")

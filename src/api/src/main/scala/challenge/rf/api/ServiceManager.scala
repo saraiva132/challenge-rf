@@ -51,14 +51,14 @@ trait ServiceManager {
    *
    * Non-blocking method.
    */
-  def startAll()
+  def startAll() : Unit
 
   /**
    * Stop all services. (Taking in account dependant services order)
    *
    * Non-blocking method.
    */
-  def stopAll()
+  def stopAll(): Unit
 }
 
 /**
@@ -99,9 +99,11 @@ case class ServiceMetadata(name : String, cls : String, dependencies : Vector[St
  * Allows Service to mutate its own state while keeping the same object (for locking purposes). This is useful because the synchronization
  * will all be done on the ServiceState object. All mutations MUST be done inside a synchronized block.
  *
- * @param state - Initial State.
+ * @param init - Initial State.
  */
-case class ServiceState(var state : State = NEW)
+case class ServiceState(val init : State = NEW) {
+  @volatile var state = init
+}
 
 /**
  * Loads and validates service metadata
