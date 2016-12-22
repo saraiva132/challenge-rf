@@ -29,12 +29,13 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
   /* Override means a Stop can override a concurrent Start */
   type Override = AtomicBoolean
 
-  private val shapeless = TrieMap.empty[String, ServiceState :: Service :: Thread :: Override]
+  private val shapeless = TrieMap.empty[String, ServiceState :: Service :: Thread :: Override :: HNil]
 
   /* Efficient Trie(O(log(32,n))) that handles concurrent accesses for free */
   private val services = TrieMap.empty[String, (ServiceState, Service, Thread, Override)]
   /* Load config. Initially there are no services active so lets just put the entries null and the state NEW */
   config.foreach(it => services.put(it.name, (ServiceState(), null, null, new AtomicBoolean(false))))
+  config.foreach(it => shapeless.put(it.name, ServiceState() :: null :: null :: new AtomicBoolean(false) :: HNil))
 
   /* get service metadata from config helper */
   private val fromConfig = (name: String) => config.find(_.name equals name)
@@ -79,7 +80,7 @@ class ServiceManagerImpl(config: Vector[ServiceMetadata]) extends ServiceManager
               }.recover { case _ =>
                 svState.state = DISABLED
                 NOK
-              }.get // deal with result..
+              }.get
             case RUNNING | STARTING =>
               OK
             case DISABLED =>

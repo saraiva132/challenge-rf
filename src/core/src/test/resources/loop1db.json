@@ -10,11 +10,14 @@
     "name" : "service2",
     "cls"  : "challenge.rf.core.ServiceExample1",
     "dependencies" : [
-      "service3","service1"
+      "service3"
     ]
   },
   {
     "name" : "service3",
-    "cls"  : "challenge.rf.core.ServiceExample2"
+    "cls"  : "challenge.rf.core.ServiceExample2",
+    "dependencies" : [
+      "service2"
+    ]
   }
 ]

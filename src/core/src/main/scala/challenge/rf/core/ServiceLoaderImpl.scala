@@ -55,13 +55,14 @@ class ServiceLoaderImpl extends ServiceLoader {
 
       def nameToService(name : String) : Option[ServiceMetadata] = metadata.find(_.name equals name)
 
-      def loop(deps: Vector[ServiceMetadata]): Boolean = {
+      def loop(deps: Vector[ServiceMetadata], visited : Vector[String]): Boolean = {
         if(deps.size == 0) false /* All good*/
         else if(deps.exists(_.dependencies.exists( _ equals sv.name))) true /* Cyclic Dependency*/
-        else deps.exists(s => loop(s.dependencies.flatMap(nameToService))) /* Recursively call all dependencies*/
+        else if(visited.exists( it => deps.exists(_.name equals it))) true /* Transitive Dependency*/
+        else deps.exists(s => loop(s.dependencies.flatMap(nameToService), visited :+ s.name)) /* Recursively call all dependencies*/
       }
 
-      loop(sv.dependencies.flatMap(nameToService))
+      loop(sv.dependencies.flatMap(nameToService), Vector.empty)
     }
 
     if(!detectDuplicates || !detectInvalidDependencies || metadata.exists(detectGraphLoop)) NOK
